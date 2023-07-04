@@ -60,7 +60,10 @@ const Card = () => {
     } 
 
     const contractHandler = async()=>{
+     try {
+
       if(contractAddress&&userAddress){
+        setErrorMessage('')
         const contract = new ethers.Contract(contractAddress,contractAbi,provider) 
         console.log(contract)
         const name = await contract.name()
@@ -69,11 +72,16 @@ const Card = () => {
         setContractSymbol(symbol)
         const balance = await contract.balanceOf(userAddress)
         setUserBalance(ethers.utils.formatEther(balance))
-        setErrorMessage('')
+
       }
       else{
         setErrorMessage("please connect with your wallet first")
       }
+      
+     } catch (error) {
+      alert("you have to have erc-20 tokens of contract which you submitted")
+      console.log(error)
+     }
     }
   return (
     <div className='card'>
