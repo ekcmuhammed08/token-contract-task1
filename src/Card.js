@@ -42,6 +42,7 @@ const Card = () => {
         if(window.ethereum){
             provider.send("eth_requestAccounts",[]).then(async()=>{
                await accountChangeHandler(provider.getSigner())
+               setErrorMessage('')
             })
         }
         else{
@@ -72,7 +73,6 @@ const Card = () => {
         setContractSymbol(symbol)
         const balance = await contract.balanceOf(userAddress)
         setUserBalance(ethers.utils.formatEther(balance))
-
       }
       else{
         setErrorMessage("please connect with your wallet first")
