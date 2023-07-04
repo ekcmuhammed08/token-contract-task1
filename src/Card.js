@@ -79,7 +79,7 @@ const Card = () => {
       }
       
      } catch (error) {
-      alert("you have to have erc-20 tokens of contract which you submitted")
+      alert("you have to switch to correct network")
       console.log(error)
      }
     }
