@@ -7,18 +7,30 @@ const Card = () => {
     const inputRef = useRef(null)
     const [errorMessage,setErrorMessage] = useState(null)
     const [userAddress, setUserAddress] = useState(null)
-    const [userBalance, setUserBalance] = useState(null)
+    const [userBalance, setUserBalance] = useState(null) 
     const storedContractAddress = JSON.parse(localStorage.getItem('contractAddress'))
-    const [contractAddress, setContractAddress] = useState(storedContractAddress)
+    const [contractAddress, setContractAddress] = useState(null)
     const [contractName, setContractName] = useState(null)
     const [contractSymbol, setContractSymbol] = useState(null)
     const contractAbi = ERC20abi
 
-
+    useEffect(() => {
+      if(localStorage.getItem('contractAddress')==='null'){ 
+        // const address = localStorage.getItem('contractAddress')
+        // setContractAddress(address)
+        // console.log(localStorage.getItem('contractAddress'))
+        console.log('a')
+      }else{
+        console.log('x')
+        setContractAddress(JSON.parse(localStorage.getItem('contractAddress')))
+      }
+      contractHandler()
+    }, [])
+    
     useEffect(() => {
       localStorage.setItem('contractAddress',JSON.stringify(contractAddress))
       contractHandler()
-    }, [contractAddress])
+    }, [contractAddress,userAddress])
 
     const handleSubmit = (evt) => {
       evt.preventDefault()
@@ -48,7 +60,7 @@ const Card = () => {
     } 
 
     const contractHandler = async()=>{
-      if(contractAddress){
+      if(contractAddress&&userAddress){
         const contract = new ethers.Contract(contractAddress,contractAbi,provider) 
         console.log(contract)
         const name = await contract.name()
@@ -57,22 +69,23 @@ const Card = () => {
         setContractSymbol(symbol)
         const balance = await contract.balanceOf(userAddress)
         setUserBalance(ethers.utils.formatEther(balance))
+        setErrorMessage('')
       }
       else{
-        setErrorMessage("please enter a valid contract address")
+        setErrorMessage("please connect with your wallet first")
       }
     }
   return (
     <div className='card'>
       <div className='button'>
-      {/* <p>Stored Contract Address: {storedContractAddress&&storedContractAddress}</p> */}
+      <p>{storedContractAddress && 'Stored Contract Address: ' + storedContractAddress}</p>
       <button onClick={walletConnectHandler}>
         {userAddress? "connected" : "connect wallet"}
       </button>
       </div>
       {errorMessage}
       <br />
-      {userAddress}
+      {userAddress && 'Connected Wallet: '+ userAddress}
       <br />
       <br />
       {contractName}
