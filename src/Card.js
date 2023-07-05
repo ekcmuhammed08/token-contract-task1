@@ -96,7 +96,7 @@ const Card = () => {
      try {
       if(contractAddress&&userAddress){
         setErrorMessage('') 
-        contractAddress.map(async(item)=>{
+        contractAddress.map(async(item,i)=>{
           try {
           console.log('inn')
           console.log(item.address)
