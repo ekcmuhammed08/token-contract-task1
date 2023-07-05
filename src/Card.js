@@ -18,7 +18,6 @@ const Card = () => {
     const [currentNetwork, setCurrentNetwork] = useState(null)
     const [errorMessage,setErrorMessage] = useState(null)
     const [userAddress, setUserAddress] = useState(null)
-    const [userBalance, setUserBalance] = useState(null) 
     const [contractAddress, setContractAddress] = useState([{address:null,name:null,symbol:null,balance:null,network:null}])
     const contractAbi = ERC20abi 
     console.log(contractAddress)
@@ -108,7 +107,6 @@ const Card = () => {
           item.symbol = await symbol
           const balance = await contract.balanceOf(userAddress)
           item.balance = await ethers.utils.formatEther(balance)
-          setUserBalance(ethers.utils.formatEther(balance))
             
           } catch (error) {
             console.log(error)
@@ -275,7 +273,7 @@ const Card = () => {
         console.log(item)
         if(item.network===currentNetwork){
           return(
-            item.name!=null&&<div>
+            item.name!=null&&<div key={i}>
               <br />
               <h2>{i+1}</h2>
               <p>{'Contract Address: '+item.address}</p>
