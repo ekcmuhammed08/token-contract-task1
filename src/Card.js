@@ -96,6 +96,7 @@ const Card = () => {
       if(contractAddress&&userAddress){
         setErrorMessage('') 
         contractAddress.map(async(item,i)=>{
+          
           try {
           console.log('inn')
           console.log(item.address)
@@ -270,7 +271,6 @@ const Card = () => {
         </div>
         }
         {userAddress && contractAddress.map((item,i)=>{
-        console.log(item)
         if(item.network===currentNetwork){
           return(
             item.name!=null&&<div key={i}>
