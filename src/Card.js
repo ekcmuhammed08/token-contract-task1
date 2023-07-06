@@ -1,26 +1,31 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { ethers } from 'ethers';
+import { FixedNumber, ethers } from 'ethers';
 import ERC20abi from './erc-20-abi.json'
+import './App.css';
 
 const provider = window.ethereum && new ethers.providers.Web3Provider(window.ethereum,"any")
 const Card = () => {
   provider.on("network", (newNetwork, oldNetwork) => {
-    // When a Provider makes its initial connection, it emits a "network"
-    // event with a null oldNetwork along with the newNetwork. So, if the
-    // oldNetwork exists, it represents a changing network
-    if (oldNetwork) {
-        window.location.reload();
-    }
-});
+      // When a Provider makes its initial connection, it emits a "network"
+      // event with a null oldNetwork along with the newNetwork. So, if the
+      // oldNetwork exists, it represents a changing network
+      if (oldNetwork) {
+          window.location.reload();
+      }
+  });
     const inputRef = useRef(null)
     const selectRef = useRef(null)
+    const recipientRef = useRef(null)
+    const amountRef = useRef(null)
     
     const [currentNetwork, setCurrentNetwork] = useState(null)
     const [errorMessage,setErrorMessage] = useState(null)
     const [userAddress, setUserAddress] = useState(null)
+    const [currentContract,setCurrentContract] = useState(null)
     const [contractAddress, setContractAddress] = useState([{address:null,name:null,symbol:null,balance:null,network:null}])
+    const [display,setDisplay] = useState('none')
+    const [ctrl,setCtrl]=useState(0);
     const contractAbi = ERC20abi 
-    console.log(contractAddress)
 
     useEffect(() => {
       setContractAddress(JSON.parse(localStorage.getItem('contractAddress')))
@@ -33,38 +38,31 @@ const Card = () => {
       document.getElementById('select').value = JSON.parse(localStorage.getItem('currentNetwork'))
       contractHandler()
     }, [])
-    
+
     useEffect(() => {
       if(localStorage.getItem('contractAddress')===null){
       localStorage.setItem('contractAddress',JSON.stringify(contractAddress))
     }
-      contractHandler()
+    contractHandler()
     }, [contractAddress,userAddress])
 
     useEffect(() => {
-      if(localStorage.getItem('currentNetwork')===null){
-      localStorage.setItem('currentNetwork',JSON.stringify(currentNetwork))
-    }
+      switchNetwork()
       contractHandler()
-    }, [currentNetwork])
-
+   }, [currentNetwork])
+    
     const handleSubmit = (evt) => {
       evt.preventDefault()
-      if(contractAddress[0].address===null){
+      if(contractAddress[0].name===null){
         setContractAddress([{
           address:inputRef.current.value,
-          name:null,
-          symbol:null,
-          balance:null,
           network:currentNetwork,
+         
         }])
       }else{
         setContractAddress([...contractAddress, {
           address:inputRef.current.value,
-          name:null,
-          symbol:null,
-          balance:null,
-          network:currentNetwork,  
+          network:currentNetwork,
         }])
       }
       inputRef.current.value = ''
@@ -91,15 +89,15 @@ const Card = () => {
         console.log(ethers.utils.formatEther(balance))   
     } 
 
-    const   contractHandler = async()=>{
-     try {
-      if(contractAddress&&userAddress){
+    const contractHandler = async()=>{
+     try { 
+      if(userAddress){
         setErrorMessage('') 
         contractAddress.map(async(item,i)=>{
-          
           try {
           console.log('inn')
           console.log(item.address)
+          item.id = i
           const contract = new ethers.Contract(item.address,contractAbi,provider)  
           console.log(contract)
           const name = await contract.name()
@@ -108,12 +106,12 @@ const Card = () => {
           item.symbol = await symbol
           const balance = await contract.balanceOf(userAddress)
           item.balance = await ethers.utils.formatEther(balance)
-            
+          localStorage.setItem('contractAddress',JSON.stringify(contractAddress))
+          
           } catch (error) {
             console.log(error)
           }
         })
-        localStorage.setItem('contractAddress',JSON.stringify(contractAddress))
         console.log(contractAddress)
       }
       else{
@@ -121,18 +119,27 @@ const Card = () => {
       }
       
      } catch (error) {
-      // alert("you have to switch to correct network")
       console.log(error)
      }
     }
 
+    const sendTokens= async(contractAddress,recipient,amount) =>{
+      const contract = new ethers.Contract(contractAddress,contractAbi,provider) 
+      const signer = await provider.getSigner()
+      const contractWSigner =contract.connect(signer) 
+      contractWSigner.transfer(recipient,ethers.utils.parseEther(amount));
+      return true
+     }
+
     const handleRemoveItem = (e) => {
-      const name = e.target.getAttribute("name")
+      console.log(contractAddress.length)
+      const id = e.target.getAttribute("id")
+      console.log(id)
        if(contractAddress.length===1){
         setContractAddress([{address:null,name:null,symbol:null,balance:null,network:null}])
         localStorage.setItem('contractAddress',JSON.stringify([{address:null,name:null,symbol:null,balance:null,network:null}]))
        }else{
-        setContractAddress(contractAddress.filter(item => item.name !== name))
+        setContractAddress(contractAddress.filter(item => item.id != id))
        }
      }
 
@@ -141,10 +148,26 @@ const Card = () => {
       localStorage.setItem('currentNetwork', JSON.stringify(selectRef.current.value))
      }
 
-     useEffect(() => {
-        switchNetwork()
-     }, [currentNetwork])
+     const handleSend=(address)=>{
+      setCtrl(ctrl+1)
+      if(ctrl%2===0){
+        setDisplay('flex')
+      }else{
+        setDisplay('none')
+      }
+      setCurrentContract(address)
+      console.log(currentContract)
+     }
+
      
+     const handleTx = (evt)=>{
+      evt.preventDefault()
+      
+      console.log(recipientRef.current.value)
+      console.log(amountRef.current.value)
+      sendTokens(currentContract,recipientRef.current.value,amountRef.current.value)
+
+     }
 
      const switchNetwork = async() =>{
       console.log(currentNetwork)
@@ -164,9 +187,9 @@ const Card = () => {
                   method: 'wallet_addEthereumChain',
                   params: [
                     {
-                      chainId: '0xf00',
-                      chainName: '...',
-                      rpcUrls: ['https://...'] /* ... */,
+                      chainId: '0x13881',
+                      chainName: 'Mumbai',
+                      rpcUrls: ['https://rpc-mumbai.maticvigil.com'] /* ... */,
                     },
                   ],
                 });
@@ -191,9 +214,9 @@ const Card = () => {
                   method: 'wallet_addEthereumChain',
                   params: [
                     {
-                      chainId: '0xf00',
-                      chainName: '...',
-                      rpcUrls: ['https://...'] /* ... */,
+                      chainId: '0x89',
+                      chainName: 'Polygon Mainnet',
+                      rpcUrls: ['https://polygon-rpc.com'] /* ... */,
                     },
                   ],
                 });
@@ -218,9 +241,9 @@ const Card = () => {
                   method: 'wallet_addEthereumChain',
                   params: [
                     {
-                      chainId: '0xf00',
-                      chainName: '...',
-                      rpcUrls: ['https://...'] /* ... */,
+                      chainId: '0x1',
+                      chainName: 'Ethereum Mainnet',
+                      rpcUrls: ['https://ethereum.publicnode.com'] /* ... */,
                     },
                   ],
                 });
@@ -235,8 +258,17 @@ const Card = () => {
      }
   return (
     <div className='card'>
+            <div id='tx-modal' className='modal' style={{display:`${display}`, position:'fixed',top:'50vh', left:'50vh', padding:'20px'}}>
+                <form onSubmit={(evt)=>{handleTx(evt)}}>
+                  <label>
+                    <input type="text" placeholder='recipient address' ref={recipientRef} />                    
+                    <input type="number" placeholder='amount' ref={amountRef} step='.000000000000000001'/>                    
+                    <input type="submit" />
+                  </label>
+                </form>
+            </div>
       <div className="">
-      <select name="" id="select" ref={selectRef} onClick={handleSelectNetwork}>
+      <select id="select"  ref={selectRef} onClick={handleSelectNetwork}>
         <option value="Mumbai">Mumbai</option>
         <option value="Matic">Matic</option>
         <option value="Ethereum">Ethereum</option>
@@ -256,7 +288,7 @@ const Card = () => {
       <br />
       <div className='address-form'>
         {userAddress &&
-        <div>
+        <div className='flex'>
             <form onSubmit={(evt)=>{handleSubmit(evt)}}>
               <label>
                   Contract Address: 
@@ -268,19 +300,22 @@ const Card = () => {
                   />
               </label>
             </form>
+            <button onClick={()=>setContractAddress(JSON.parse(localStorage.getItem('contractAddress')))}>refresh</button>
         </div>
         }
         {userAddress && contractAddress.map((item,i)=>{
         if(item.network===currentNetwork){
           return(
-            item.name!=null&&<div key={i}>
+            item.name!=null&&
+            <div key={i}>
               <br />
               <h2>{i+1}</h2>
               <p>{'Contract Address: '+item.address}</p>
               <p>{'Name: '+item.name}</p>
               <p>{'Symbol: '+item.symbol}</p>
               <p>{'Your Balance: '+item.balance}</p>
-              <button name={item.name} onClick={handleRemoveItem}>remove</button>
+              <button id={item.address} className='send-button' onClick={()=>{handleSend(item.address)}}>send</button>
+              <button id={item.id} onClick={handleRemoveItem}>remove</button>
             </div>
           )
         }
