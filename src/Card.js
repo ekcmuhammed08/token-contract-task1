@@ -28,7 +28,11 @@ const Card = () => {
     const contractAbi = ERC20abi 
 
     useEffect(() => {
-      setContractAddress(JSON.parse(localStorage.getItem('contractAddress')))
+      if(localStorage.getItem('contractAddress')===null){
+        setContractAddress([{address:null,name:null,symbol:null,balance:null,network:null}])
+      }else{
+        setContractAddress(JSON.parse(localStorage.getItem('contractAddress')))
+      }
       walletConnectHandler()
       contractHandler()
     }, [])
