@@ -18,7 +18,7 @@ const Card = () => {
     const recipientRef = useRef(null)
     const amountRef = useRef(null)
     
-    const [currentNetwork, setCurrentNetwork] = useState(null)
+    const [currentNetwork, setCurrentNetwork] = useState('Mumbai')
     const [errorMessage,setErrorMessage] = useState(null)
     const [userAddress, setUserAddress] = useState(null)
     const [currentContract,setCurrentContract] = useState(null)
@@ -32,6 +32,12 @@ const Card = () => {
         setContractAddress([{address:null,name:null,symbol:null,balance:null,network:null}])
       }else{
         setContractAddress(JSON.parse(localStorage.getItem('contractAddress')))
+      }
+      if(localStorage.getItem('currentNetwork')===null){
+        document.getElementById('Mumbai').selected= true
+        setCurrentNetwork('Mumbai')
+      }else{
+        setCurrentNetwork(localStorage.getItem('currentNetwork'))
       }
       walletConnectHandler()
       contractHandler()
@@ -51,6 +57,7 @@ const Card = () => {
     }, [contractAddress,userAddress])
 
     useEffect(() => {
+      localStorage.setItem('currentNetwork',JSON.stringify(currentNetwork))
       switchNetwork()
       contractHandler()
    }, [currentNetwork])
@@ -143,7 +150,6 @@ const Card = () => {
     const handleRemoveItem = (e) => {
       console.log(contractAddress.length)
       const id = e.target.getAttribute("id")
-      console.log(id)
        if(contractAddress.length===1){
         setContractAddress([{address:null,name:null,symbol:null,balance:null,network:null}])
         localStorage.setItem('contractAddress',JSON.stringify([{address:null,name:null,symbol:null,balance:null,network:null}]))
@@ -277,10 +283,10 @@ const Card = () => {
                 </form>
             </div>
       <div className="">
-      <select id="select"  ref={selectRef} onClick={handleSelectNetwork}>
-        <option value="Mumbai">Mumbai</option>
-        <option value="Matic">Matic</option>
-        <option value="Ethereum">Ethereum</option>
+      <select id="select" ref={selectRef} onClick={handleSelectNetwork}>
+        <option value="Mumbai" id='Mumbai'>Mumbai</option>
+        <option value="Matic" id='Matic'>Matic</option>
+        <option value="Ethereum" id='Ethereum'>Ethereum</option>
       </select>
       </div>
       <div className='button'>
