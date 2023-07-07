@@ -73,7 +73,8 @@ const Card = () => {
   }
 
     const walletConnectHandler= ()=>{
-        if(window.ethereum){
+        try {
+          if(window.ethereum){
             provider.send("eth_requestAccounts",[]).then(async()=>{
                await accountChangeHandler(provider.getSigner())
                setErrorMessage('')
@@ -81,6 +82,10 @@ const Card = () => {
         }
         else{
             setErrorMessage('Please install Metamask')
+        }
+          
+        } catch (error) {
+          console.log(error)
         }
         console.log(contractAddress)
     }
