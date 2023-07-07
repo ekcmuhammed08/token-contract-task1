@@ -34,6 +34,7 @@ const Card = () => {
         setContractAddress(JSON.parse(localStorage.getItem('contractAddress')))
       }
       if(localStorage.getItem('currentNetwork')===null){
+        console.log('loggrd')
         document.getElementById('Mumbai').selected= true
         setCurrentNetwork('Mumbai')
       }else{
