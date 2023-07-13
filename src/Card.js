@@ -376,14 +376,11 @@ const Card = () => {
             <button onClick={()=>setContractAddress(JSON.parse(localStorage.getItem('contractAddress')))}>refresh</button>
         </div>
         }
-        {userAddress && contractAddress.map((item,i)=>{
+        {contractAddress && contractAddress.map((item,i)=>{
         if(item.network===currentNetwork){
           return(
             item.name!=null&&
             <div className='token-card' key={i}>
-              {/* <button id={item.id} onClick={handleRemoveItem} className='remove-button'>
-                remove
-              </button> */}
               <MdCancel id={item.id} size={'30px'} color='red' onClick={handleRemoveItem} cursor={'pointer'} /> 
               {/* <h2>{i+1}</h2> */}
               <div className="contract-info">
