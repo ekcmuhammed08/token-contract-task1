@@ -26,6 +26,7 @@ const Card = () => {
     const [currentNetwork, setCurrentNetwork] = useState(null)
     const [errorMessage,setErrorMessage] = useState(null)
     const [userAddress, setUserAddress] = useState(null)
+    const [userBalance, setUserBalance] = useState(null)
     const [currentContract,setCurrentContract] = useState(null)
     const [contractAddress, setContractAddress] = useState([{address:null,name:null,symbol:null,balance:null,network:null}])
     const [display,setDisplay] = useState('none')
@@ -89,7 +90,7 @@ const Card = () => {
         try {
           if(window.ethereum){
             provider.send("eth_requestAccounts",[]).then(async()=>{
-               await accountChangeHandler(provider.getSigner())
+               await accountChangeHandler()
                setErrorMessage('')
             })
         }
@@ -103,14 +104,17 @@ const Card = () => {
         console.log(contractAddress)
     }
 
-    const accountChangeHandler =async(newSigner)=> {
-        const address = await newSigner.getAddress()
-        console.log(address)
-        setUserAddress(address)
-        const balance = await newSigner.getBalance()
-        console.log(ethers.utils.formatEther(balance))   
+    const accountChangeHandler =async()=> {
+          const signer = await provider.getSigner()
+          console.log(signer)
+          const address = await signer.getAddress()
+          console.log(address)
+          setUserAddress(address)
+          const balance = await signer.getBalance()
+          console.log(ethers.utils.formatEther(balance))
+          setUserBalance(ethers.utils.formatEther(balance))
     } 
-    
+    window.ethereum.on('accountsChanged', accountChangeHandler);
     const contractHandler = async()=>{
      try { 
       if(userAddress){
@@ -397,6 +401,8 @@ const Card = () => {
       })}
       </div>
       {currentNetwork}
+      <br />
+      {userBalance}
     </div>
   )
 }
