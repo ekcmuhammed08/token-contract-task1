@@ -346,25 +346,26 @@ const Card = () => {
           <option value="Polygon" id='Polygon'>Polygon</option>
           <option value="Ethereum" id='Ethereum'>Ethereum</option>
         </select>
+        <div className='button'>
+        <button onClick={walletConnectHandler}>
+          {userAddress? "connected" : "connect wallet"}
+        </button>
+        </div>
       </div>
-      <div className='button'>
-        <br /><br />
-      <button onClick={walletConnectHandler}>
-        {userAddress? "connected" : "connect wallet"}
-      </button>
+      
+      
+      <div className='account-info'>
+        <p>{errorMessage}</p>
+        <p>{userAddress && 'Connected Wallet: '+ userAddress}</p>
+        <p>{userBalance && 'Balance: '+ userBalance}</p>
       </div>
-      <br />
-      {errorMessage}
-      <br />
-      {userAddress && 'Connected Wallet: '+ userAddress}
-      <br />
-      <br />
       <div className='address-form'>
         {userAddress &&
-        <div className='flex'>
+        <div className='add-tokens'>
             <form onSubmit={(evt)=>{handleSubmit(evt)}}>
               <label>
-                  Contract Address:
+                  Add Tokens With Contract Address:
+                  <br />
                   <input type="text"
                   ref={inputRef}
                   />
@@ -397,9 +398,9 @@ const Card = () => {
         }
       })}
       </div>
-      {currentNetwork}
+      {/* {currentNetwork}
       <br />
-      {userBalance}
+      {userBalance} */}
     </div>
   )
 }
