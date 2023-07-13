@@ -319,7 +319,7 @@ const Card = () => {
             <h3 style={{color:'white'}}>Approve Tokens:</h3>
             <form onSubmit={(evt)=>{handleApprove(evt)}}>
               <label>
-                <input type="text" placeholder='approved address' ref={approvedRef} />                    
+                <input type="text" placeholder='address to approve' ref={approvedRef} />                    
                 <input type="number" placeholder='amount' ref={approveAmountRef} step='.000000000000000001'/>
                 <br />                   
                 <input type="submit"/>
