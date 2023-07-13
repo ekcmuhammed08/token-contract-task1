@@ -369,7 +369,7 @@ const Card = () => {
                   <input type="text"
                   ref={inputRef}
                   />
-                  <input type='submit'value='add'
+                  <input type='submit' value='add'
                   onClick={contractHandler}
                   />
               </label>
@@ -377,7 +377,7 @@ const Card = () => {
             <button onClick={()=>setContractAddress(JSON.parse(localStorage.getItem('contractAddress')))}>refresh</button>
         </div>
         }
-        {contractAddress && contractAddress.map((item,i)=>{
+        {(userAddress && contractAddress)&& contractAddress.map((item,i)=>{
         if(item.network===currentNetwork){
           return(
             item.name!=null&&
