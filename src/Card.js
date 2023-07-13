@@ -245,7 +245,7 @@ const Card = () => {
             // handle other "switch" errors
           }
           break;
-        case "Matic":
+        case "Polygon":
           try {
             await window.ethereum.request({
               method: 'wallet_switchEthereumChain',
@@ -343,7 +343,7 @@ const Card = () => {
       <div className="">
         <select id="select" ref={selectRef} onClick={handleSelectNetwork}>
           <option value="Mumbai" id='Mumbai'>Mumbai</option>
-          <option value="Matic" id='Matic'>Matic</option>
+          <option value="Polygon" id='Polygon'>Polygon</option>
           <option value="Ethereum" id='Ethereum'>Ethereum</option>
         </select>
       </div>
