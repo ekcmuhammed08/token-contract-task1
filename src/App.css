@@ -38,6 +38,41 @@
   }
 }
 .modal{
-  background-color: #61dafb;
-  display: flex;
+  background-color: #282c34;
+  display:flex;
+  flex-direction: column;
+  position: fixed;
+  width: 20%;
+  top:30vh;
+  left: 70%;
+  padding: 20px;
+  border-radius: 10px;
 }
+.address-form{
+  display:flex;
+  flex-direction: column;
+  align-items:center;
+  } 
+  .token-card{
+  display:flex;
+  flex-direction: column;
+  width:'500px';
+  background-color: gold;
+  border-radius: 5%;
+  padding: 20px;
+  margin: 20px;
+  }
+  .contract-info{
+  display:flex;
+  flex-direction: column;
+  align-items:flex-start;
+  
+  }
+  .remove-button{
+    background:none;
+    border: none;
+    cursor: pointer;
+    float: right;
+  }
+
+
